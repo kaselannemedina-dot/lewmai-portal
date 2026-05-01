@@ -397,7 +397,7 @@ body::before{
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEC68QdLSzUSlwS8c2iOMBxffirlHjmZoW25KJsWtKgdAd7s5CyyqYXkxilB7pr3qKLQ/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkxA3Z1sPSTJMRgoiPaBOTndKZUeeBafhjTJfBmAlDcycvU6clDj6SLRhMdHo0gDuw/exec';
 
 const loanIcons = {Salary:"💼",Emergency:"🚨",Educational:"🎓",Furniture:"🛋️"};
 
@@ -436,8 +436,24 @@ async function doLogin(){
   document.getElementById('login-error').style.display='none';
 
   try {
-    const res = await fetch(SCRIPT_URL + '?empId=' + encodeURIComponent(emp));
-    const data = await res.json();
+    const data = await new Promise((resolve, reject) => {
+      const callbackName = 'lewmai_cb_' + Date.now();
+      const script = document.createElement('script');
+      const timeout = setTimeout(() => {
+        delete window[callbackName];
+        document.body.removeChild(script);
+        reject(new Error('Timeout'));
+      }, 10000);
+      window[callbackName] = function(data) {
+        clearTimeout(timeout);
+        delete window[callbackName];
+        document.body.removeChild(script);
+        resolve(data);
+      };
+      script.src = SCRIPT_URL + '?empId=' + encodeURIComponent(emp) + '&callback=' + callbackName;
+      script.onerror = () => { clearTimeout(timeout); reject(new Error('Script error')); };
+      document.body.appendChild(script);
+    });
 
     if(data.found){
       currentMember = data;
