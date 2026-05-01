@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LEWMAI Member Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#0a1628;
+  --bg2:#0f1e38;
+  --gold:#d4a843;
+  --gold2:#f0c96a;
+  --white:#f0ede8;
+  --muted:#7a8aaa;
+  --border:rgba(212,168,67,0.18);
+  --card:rgba(255,255,255,0.04);
+  --green:#4caf82;
+  --red:#e07070;
+  --blue:#5b9bd5;
+}
+
+body{
+  font-family:'Outfit',sans-serif;
+  background:var(--bg);
+  color:var(--white);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:1.5rem 1rem;
+}
+
+body::before{
+  content:'';
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(212,168,67,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 90%, rgba(91,155,213,0.05) 0%, transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+
+.wrap{
+  position:relative;
+  z-index:1;
+  width:100%;
+  max-width:500px;
+}
+
+/* ── SCREEN TRANSITIONS ── */
+.screen{display:none;animation:rise 0.45s cubic-bezier(.22,1,.36,1) both;}
+.screen.active{display:block;}
+@keyframes rise{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── LOGO / HEADER ── */
+.logo{text-align:center;margin-bottom:2rem;}
+.logo-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  border:1px solid var(--border);
+  padding:0.35rem 1rem;border-radius:99px;
+  font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);
+  margin-bottom:1rem;
+}
+.logo-badge::before{content:'◆';font-size:0.55rem;}
+.logo h1{font-family:'Cormorant Garamond',serif;font-size:2rem;line-height:1.15;color:var(--white);}
+.logo h1 span{color:var(--gold);}
+.logo p{color:var(--muted);font-size:0.85rem;margin-top:0.4rem;font-weight:300;}
+
+/* ── CARD ── */
+.card{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px;
+  padding:1.8rem;
+  backdrop-filter:blur(12px);
+}
+
+/* ── FORM ── */
+.field{margin-bottom:1.3rem;}
+.field label{
+  display:block;font-size:0.72rem;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:0.45rem;font-weight:500;
+}
+.field input{
+  width:100%;background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:9px;padding:0.82rem 1rem;
+  color:var(--white);font-family:'Outfit',sans-serif;font-size:0.95rem;outline:none;
+  transition:border-color 0.2s,background 0.2s;
+}
+.field input::placeholder{color:rgba(255,255,255,0.22);}
+.field input:focus{border-color:var(--gold);background:rgba(255,255,255,0.08);}
+
+.btn{
+  width:100%;background:var(--gold);color:#0a1628;
+  border:none;border-radius:9px;padding:0.9rem;
+  font-family:'Outfit',sans-serif;font-size:0.95rem;font-weight:600;
+  cursor:pointer;transition:background 0.2s,transform 0.1s;letter-spacing:0.03em;
+  margin-top:0.3rem;
+}
+.btn:hover{background:var(--gold2);}
+.btn:active{transform:scale(0.98);}
+.btn-outline{
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  font-size:0.82rem;font-weight:400;padding:0.65rem;margin-top:0.8rem;
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);background:transparent;}
+
+/* ── ERROR ── */
+.error-box{
+  background:rgba(224,112,112,0.1);border:1px solid rgba(224,112,112,0.35);
+  border-radius:10px;padding:1.2rem;text-align:center;
+}
+.error-box .ei{font-size:2rem;margin-bottom:0.4rem;}
+.error-box h3{color:var(--red);font-size:1rem;}
+.error-box p{color:var(--muted);font-size:0.8rem;margin-top:0.25rem;}
+
+/* ── PROFILE ── */
+.profile-bar{
+  display:flex;align-items:center;gap:1rem;
+  padding-bottom:1.2rem;margin-bottom:1.2rem;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.avatar{
+  width:52px;height:52px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold),#8b6312);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:#0a1628;font-weight:700;
+}
+.profile-info h2{font-family:'Cormorant Garamond',serif;font-size:1.25rem;}
+.profile-info .meta{font-size:0.78rem;color:var(--muted);margin-top:0.15rem;}
+.status-badge{
+  display:inline-block;font-size:0.65rem;letter-spacing:0.1em;
+  text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:99px;
+  background:rgba(76,175,130,0.15);border:1px solid rgba(76,175,130,0.35);color:var(--green);
+  margin-left:0.5rem;vertical-align:middle;
+}
+
+/* ── NAV BUTTONS ── */
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-top:0.5rem;}
+.nav-card{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
+  border-radius:12px;padding:1.2rem 1rem;text-align:center;cursor:pointer;
+  transition:border-color 0.2s,background 0.2s,transform 0.15s;
+}
+.nav-card:hover{border-color:var(--gold);background:rgba(212,168,67,0.07);transform:translateY(-2px);}
+.nav-card .nicon{font-size:1.8rem;margin-bottom:0.5rem;}
+.nav-card .ntitle{font-size:0.9rem;font-weight:500;}
+.nav-card .nsub{font-size:0.72rem;color:var(--muted);margin-top:0.2rem;}
+
+/* ── SECTION HEADER ── */
+.sec-header{
+  display:flex;align-items:center;gap:0.8rem;
+  margin-bottom:1.2rem;padding-bottom:0.9rem;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.back-btn{
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  border-radius:8px;padding:0.4rem 0.7rem;font-size:0.8rem;cursor:pointer;
+  color:var(--muted);font-family:'Outfit',sans-serif;transition:all 0.2s;flex-shrink:0;
+}
+.back-btn:hover{border-color:var(--gold);color:var(--gold);}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;}
+
+/* ── DIVIDENDS BANNER ── */
+.div-banner{
+  background:linear-gradient(135deg,rgba(212,168,67,0.15),rgba(212,168,67,0.05));
+  border:1px solid rgba(212,168,67,0.3);border-radius:12px;
+  padding:1rem 1.2rem;margin-bottom:1.2rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.div-banner .dl{font-size:0.72rem;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;}
+.div-banner .dv{font-size:1.5rem;font-weight:600;color:var(--gold2);}
+
+/* ── TOTAL ROW ── */
+.total-row{
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(76,175,130,0.08);border:1px solid rgba(76,175,130,0.2);
+  border-radius:10px;padding:0.9rem 1.1rem;margin-bottom:1rem;
+}
+.total-row .tl{font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;}
+.total-row .tv{font-size:1.2rem;font-weight:600;color:var(--green);}
+
+/* ── MONTHLY TABLE ── */
+.month-table{width:100%;border-collapse:collapse;}
+.month-table th{
+  font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--muted);padding:0.5rem 0.6rem;text-align:left;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.month-table td{
+  font-size:0.88rem;padding:0.65rem 0.6rem;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.month-table tr:last-child td{border-bottom:none;}
+.month-table .amt{color:var(--green);font-weight:500;text-align:right;}
+.month-table th:last-child{text-align:right;}
+
+/* ── LOAN TYPE GRID ── */
+.loan-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;}
+.loan-type-card{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
+  border-radius:12px;padding:1.1rem 1rem;cursor:pointer;
+  transition:border-color 0.2s,background 0.2s,transform 0.15s;
+}
+.loan-type-card:hover{border-color:var(--blue);background:rgba(91,155,213,0.07);transform:translateY(-2px);}
+.loan-type-card .licon{font-size:1.6rem;margin-bottom:0.5rem;}
+.loan-type-card .lname{font-size:0.9rem;font-weight:500;}
+.loan-type-card .lbal{font-size:0.8rem;margin-top:0.3rem;}
+.loan-type-card .lbal.has-bal{color:var(--red);}
+.loan-type-card .lbal.no-bal{color:var(--green);}
+
+/* ── LOAN DETAIL ── */
+.loan-detail-header{
+  background:rgba(91,155,213,0.08);border:1px solid rgba(91,155,213,0.2);
+  border-radius:12px;padding:1rem 1.2rem;margin-bottom:1rem;
+}
+.loan-detail-header .ltype{font-size:0.7rem;color:var(--blue);text-transform:uppercase;letter-spacing:0.12em;}
+.loan-detail-header .lamt{font-size:1.6rem;font-weight:600;color:var(--red);}
+.loan-detail-header .lamt.zero{color:var(--green);}
+
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-bottom:1rem;}
+.detail-box{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);
+  border-radius:9px;padding:0.8rem;
+}
+.detail-box .dl{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.25rem;}
+.detail-box .dv{font-size:0.92rem;font-weight:500;}
+
+.payments-title{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.6rem;}
+.payment-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0.6rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.85rem;
+}
+.payment-row:last-child{border-bottom:none;}
+.payment-row .pdate{color:var(--muted);}
+.payment-row .pamt{color:var(--green);font-weight:500;}
+
+.stat-box{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:0.8rem;}
+.stat-label{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.25rem;}
+.stat-value{font-size:1.1rem;font-weight:500;}
+.stat-value.positive{color:var(--green);}
+
+.demo-note{
+  text-align:center;color:var(--muted);font-size:0.72rem;
+  margin-top:1.5rem;letter-spacing:0.05em;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ══ SCREEN 1: LOGIN ══ -->
+<div class="screen active" id="s-login">
+  <div class="logo">
+    <div class="logo-badge">Member Portal</div>
+    <h1>LEWMAI</h1>
+    <p style="color:var(--gold);font-size:0.78rem;letter-spacing:0.08em;margin-top:0.3rem;">LTO East West Mutual Assistance Inc.</p>
+    <p style="margin-top:0.5rem;">I-type ang iyong Employee Number para mag-login</p>
+  </div>
+  <div class="card">
+    <div class="field">
+      <label>Employee Number</label>
+      <input type="text" id="inp-emp" placeholder="EMP-00123"/>
+    </div>
+    <button class="btn" onclick="doLogin()">Mag-login →</button>
+    <div id="login-error" style="display:none;margin-top:1rem;">
+      <div class="error-box">
+        <div class="ei">⚠️</div>
+        <h3>Sorry, you are not an LTO-NCR employee or your employee number cannot be found.</h3>
+        <p>Pakitiyak na tama ang iyong Employee Number.</p>
+      </div>
+    </div>
+  </div>
+  <div class="demo-note">DEMO VERSION · Sample Data Lamang</div>
+</div>
+
+<!-- ══ SCREEN 2: DASHBOARD ══ -->
+<div class="screen" id="s-dash">
+  <div class="card">
+    <div class="profile-bar">
+      <div class="avatar" id="d-avatar"></div>
+      <div class="profile-info">
+        <h2 id="d-name"></h2>
+        <div class="meta">
+          <span id="d-empno"></span>
+          <span class="status-badge" id="d-status-badge"></span>
+        </div>
+        <div class="meta" style="margin-top:0.25rem;">Member since: <span id="d-since"></span></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1.2rem;">
+      <div class="stat-box">
+        <div class="stat-label">Employment</div>
+        <div class="stat-value" id="d-employment" style="font-size:1rem;"></div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Member</div>
+        <div class="stat-value" id="d-member" style="font-size:1rem;"></div>
+      </div>
+    </div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.8rem;">Piliin ang records na gusto mong tingnan:</div>
+    <div class="nav-grid">
+      <div class="nav-card" onclick="showScreen('s-contrib')">
+        <div class="nicon">💰</div>
+        <div class="ntitle">Monthly Contributions</div>
+        <div class="nsub">Dividends & breakdown</div>
+      </div>
+      <div class="nav-card" onclick="showScreen('s-loans')">
+        <div class="nicon">📋</div>
+        <div class="ntitle">Loans</div>
+        <div class="nsub">4 loan types</div>
+      </div>
+    </div>
+    <button class="btn btn-outline" onclick="doLogout()">← Mag-logout</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3: CONTRIBUTIONS ══ -->
+<div class="screen" id="s-contrib">
+  <div class="card">
+    <div class="sec-header">
+      <button class="back-btn" onclick="showScreen('s-dash')">← Bumalik</button>
+      <div class="sec-title">Monthly Contributions</div>
+    </div>
+
+    <!-- Beginning Balance -->
+    <div class="total-row" style="margin-bottom:0.7rem;">
+      <div class="tl">2025 Beginning Balance</div>
+      <div class="tv" id="c-beg-bal"></div>
+    </div>
+
+    <!-- Total Contributions -->
+    <div class="total-row">
+      <div class="tl">Total Contributions</div>
+      <div class="tv" id="c-total"></div>
+    </div>
+
+    <!-- Monthly breakdown -->
+    <table class="month-table" style="margin-bottom:1.2rem;">
+      <thead>
+        <tr>
+          <th>Buwan</th>
+          <th style="text-align:right;">Halaga</th>
+        </tr>
+      </thead>
+      <tbody id="c-tbody"></tbody>
+    </table>
+
+    <!-- ROI Section -->
+    <div style="font-size:0.72rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.7rem;">Investments / ROI</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;">
+      <div class="stat-box">
+        <div class="stat-label">2025 Earned Interest</div>
+        <div class="stat-value positive" id="c-earned-roi" style="font-size:1rem;"></div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total ROC (End Bal.)</div>
+        <div class="stat-value positive" id="c-end-bal-roi" style="font-size:1rem;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: LOAN TYPES ══ -->
+<div class="screen" id="s-loans">
+  <div class="card">
+    <div class="sec-header">
+      <button class="back-btn" onclick="showScreen('s-dash')">← Bumalik</button>
+      <div class="sec-title">Aking mga Loan</div>
+    </div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem;">Piliin ang uri ng loan:</div>
+    <div class="loan-grid" id="loan-grid"></div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 5: LOAN DETAIL ══ -->
+<div class="screen" id="s-loan-detail">
+  <div class="card">
+    <div class="sec-header">
+      <button class="back-btn" onclick="showScreen('s-loans')">← Bumalik</button>
+      <div class="sec-title" id="ld-title"></div>
+    </div>
+    <div class="loan-detail-header">
+      <div class="ltype" id="ld-type"></div>
+      <div style="font-size:0.8rem;color:var(--muted);margin:0.3rem 0 0.2rem;">Kasalukuyang Balance</div>
+      <div class="lamt" id="ld-balance"></div>
+    </div>
+    <div class="detail-grid" id="ld-details"></div>
+    <div class="payments-title">Payment History</div>
+    <div id="ld-payments"></div>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbze0F4mBnBVDNoqRTQbKcveneAl4mTqDbrZwH2UYFsNZXDWdC3-N9iUewBZVveOAfPFNA/exec';
+
+const loanIcons = {Salary:"💼",Emergency:"🚨",Educational:"🎓",Furniture:"🛋️"};
+
+let currentMember = null;
+let currentLoanType = null;
+
+function peso(n){
+  if(!n || n==='-' || n==='') return '—';
+  return "₱"+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2});
+}
+function initials(name){
+  if(!name) return '?';
+  return name.split(' ').map(w=>w[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
+}
+
+function goScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showScreen(id){
+  if(id==='s-contrib') loadContrib();
+  if(id==='s-loans')   loadLoans();
+  goScreen(id);
+}
+
+async function doLogin(){
+  const emp = document.getElementById('inp-emp').value.trim().toUpperCase();
+  if(!emp){alert('Pakitype ang Employee Number.');return;}
+
+  // Show loading
+  const btn = document.querySelector('#s-login .btn');
+  btn.textContent = 'Hinahanap...';
+  btn.disabled = true;
+  document.getElementById('login-error').style.display='none';
+
+  try {
+    const res = await fetch(SCRIPT_URL + '?empId=' + encodeURIComponent(emp));
+    const data = await res.json();
+
+    if(data.found){
+      currentMember = data;
+      loadDashboard();
+      goScreen('s-dash');
+    } else {
+      document.getElementById('login-error').style.display='block';
+    }
+  } catch(err) {
+    alert('Hindi ma-connect sa server. Subukan ulit.');
+  } finally {
+    btn.textContent = 'Mag-login →';
+    btn.disabled = false;
+  }
+}
+
+function loadDashboard(){
+  const m = currentMember;
+  document.getElementById('d-avatar').textContent = initials(m.name);
+  document.getElementById('d-name').textContent = m.name || '—';
+  document.getElementById('d-empno').textContent = m.empId || '—';
+  document.getElementById('d-status').textContent = m.status || '—';
+  document.getElementById('d-since').textContent = m.dateOfMembership || '—';
+
+  // Update status badge color
+  const badge = document.getElementById('d-status-badge');
+  if(m.status === 'Active'){
+    badge.style.background = 'rgba(76,175,130,0.15)';
+    badge.style.border = '1px solid rgba(76,175,130,0.35)';
+    badge.style.color = 'var(--green)';
+  } else {
+    badge.style.background = 'rgba(224,112,112,0.15)';
+    badge.style.border = '1px solid rgba(224,112,112,0.35)';
+    badge.style.color = 'var(--red)';
+  }
+  badge.textContent = m.status;
+
+  // Employment
+  document.getElementById('d-employment').textContent = m.employment || '—';
+  document.getElementById('d-member').textContent = m.member || '—';
+}
+
+function loadContrib(){
+  const m = currentMember;
+  const months = ['Jan-25','Feb-25','Mar-25','Apr-25','May-25','Jun-25',
+                  'Jul-25','Aug-25','Sep-25','Oct-25','Nov-25','Dec-25'];
+
+  document.getElementById('c-beg-bal').textContent = peso(m.beginningBalance);
+  document.getElementById('c-total').textContent = peso(m.totalContributions);
+  document.getElementById('c-earned-roi').textContent = peso(m.earnedROI);
+  document.getElementById('c-end-bal-roi').textContent = peso(m.endBalROI);
+
+  const tbody = document.getElementById('c-tbody');
+  tbody.innerHTML = '';
+  months.forEach(mo=>{
+    const amt = m.monthlyContributions ? m.monthlyContributions[mo] : 0;
+    tbody.innerHTML += `<tr>
+      <td>${mo}</td>
+      <td class="amt">${amt && amt!='-' && amt!=0 ? peso(amt) : '<span style="color:var(--muted)">—</span>'}</td>
+    </tr>`;
+  });
+}
+
+function loadLoans(){
+  // Loans section - will be expanded later
+  const grid = document.getElementById('loan-grid');
+  grid.innerHTML = `<div style="color:var(--muted);font-size:0.88rem;grid-column:1/-1;text-align:center;padding:1rem;">
+    Ang loan details ay darating sa susunod na update. 😊
+  </div>`;
+}
+
+function doLogout(){
+  currentMember = null;
+  document.getElementById('inp-emp').value='';
+  document.getElementById('login-error').style.display='none';
+  goScreen('s-login');
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && document.getElementById('s-login').classList.contains('active')) doLogin();
+});
+</script>
+</body>
+</html>
