@@ -436,8 +436,15 @@ async function doLogin(){
   document.getElementById('login-error').style.display='none';
 
   try {
-    const res = await fetch(SCRIPT_URL + '?empId=' + encodeURIComponent(emp));
-    const data = await res.json();
+    const res = await fetch(SCRIPT_URL + '?empId=' + encodeURIComponent(emp), {
+      redirect: 'follow',
+      method: 'GET',
+      headers: {
+        'Content-Type': 'text/plain',
+      }
+    });
+    const text = await res.text();
+    const data = JSON.parse(text);
 
     if(data.found){
       currentMember = data;
