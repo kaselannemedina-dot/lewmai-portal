@@ -397,7 +397,7 @@ body::before{
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYIATY9m5GwTFwICm5zUp0s-BFgZcgzxjnbAz4IU-FK6Bbz9u6pGWRMPVjVqgd_BvYcg/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEC68QdLSzUSlwS8c2iOMBxffirlHjmZoW25KJsWtKgdAd7s5CyyqYXkxilB7pr3qKLQ/exec';
 
 const loanIcons = {Salary:"💼",Emergency:"🚨",Educational:"🎓",Furniture:"🛋️"};
 
@@ -436,15 +436,8 @@ async function doLogin(){
   document.getElementById('login-error').style.display='none';
 
   try {
-    const res = await fetch(SCRIPT_URL + '?empId=' + encodeURIComponent(emp), {
-      redirect: 'follow',
-      method: 'GET',
-      headers: {
-        'Content-Type': 'text/plain',
-      }
-    });
-    const text = await res.text();
-    const data = JSON.parse(text);
+    const res = await fetch(SCRIPT_URL + '?empId=' + encodeURIComponent(emp));
+    const data = await res.json();
 
     if(data.found){
       currentMember = data;
